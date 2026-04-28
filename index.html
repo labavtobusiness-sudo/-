@@ -3,103 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Калькулятор @RozmytnyAvto</title>
+    <title>LabAvtoBusiness Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg-color: #0f0f0f; --card-bg: #1a1a1c; --accent-blue: #34a8eb;
-            --text-main: #ffffff; --text-secondary: #9ea0a3;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-color); color: var(--text-main);
-            margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center;
-        }
-        .container {
-            width: 100%; max-width: 400px; background: var(--card-bg);
-            padding: 20px; border-radius: 24px; box-sizing: border-box; border: 1px solid #2c2c2e;
-        }
-        .region-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px;
-        }
-        .region-btn {
-            padding: 10px; border-radius: 12px; border: 1px solid #3a3a3c;
-            background: #2c2c2e; color: var(--text-secondary); font-weight: 600; cursor: pointer;
-        }
-        .region-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
-        
+        :root { --bg: #0f0f0f; --card: #1a1a1c; --blue: #34a8eb; --text: #ffffff; --sec: #9ea0a3; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .container { background: var(--card); border-radius: 28px; border: 1px solid #2c2c2e; overflow: hidden; max-width: 400px; margin: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        .car-img { width: 100%; height: 220px; object-fit: cover; background: #252527; display: none; }
+        .p-20 { padding: 20px; }
+        .title { font-size: 22px; font-weight: 800; margin-bottom: 5px; text-align: center; }
+        .calc-box { background: rgba(52, 168, 235, 0.08); padding: 18px; border-radius: 22px; border: 1px solid rgba(52, 168, 235, 0.2); margin: 15px 0; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: var(--sec); }
+        .total { font-size: 28px; font-weight: 900; color: var(--blue); text-align: center; border-top: 1px solid #333; padding-top: 15px; margin-top: 10px; }
+        .btn { width: 100%; padding: 18px; background: var(--blue); border: none; border-radius: 18px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
         .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
-        select, input { width: 100%; padding: 14px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 14px; color: #fff; outline: none; box-sizing: border-box; }
-        
-        .calc-btn { width: 100%; border: none; padding: 18px; border-radius: 16px; font-weight: bold; font-size: 17px; cursor: pointer; margin-top: 10px; }
-        .btn-blue { background: var(--accent-blue); color: #fff; }
-        .btn-green { background: #28a745; color: #fff; margin-top: 12px; }
-        .result { margin-top: 20px; padding: 15px; background: rgba(52, 168, 235, 0.1); border-radius: 16px; display: none; text-align: center; border: 1px solid var(--accent-blue); }
+        label { font-size: 11px; color: var(--sec); margin-left: 5px; }
+        input, select { width: 100%; padding: 14px; margin-top: 5px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 15px; color: #fff; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2 style="text-align: center; margin-top: 0;">Оберіть країну 🌍</h2>
-        <div class="region-grid">
-            <button class="region-btn active" id="btn-EU" onclick="setRegion('EU', 'Німеччина 🇩🇪')">Німеччина</button>
-            <button class="region-btn" id="btn-LT" onclick="setRegion('LT', 'Литва 🇱🇹')">Литва</button>
-            <button class="region-btn" id="btn-PL" onclick="setRegion('PL', 'Польща 🇵🇱')">Польща</button>
-            <button class="region-btn" id="btn-USA" onclick="setRegion('USA', 'США 🇺🇸')">США</button>
-        </div>
+        <img id="car-img" src="" class="car-img">
+        <div class="p-20">
+            <div id="view-title" class="title">SMART КАЛЬКУЛЯТОР 2026</div>
+            <p id="sub-title" style="text-align:center; font-size:12px; color:var(--sec); margin-top:0;">@RozmytnyAvto</p>
+            
+            <div id="calc-inputs">
+                <div class="input-group">
+                    <label>Ціна автомобіля (€/$):</label>
+                    <input type="number" id="in-price" placeholder="8500" oninput="calculate()">
+                </div>
+                <div class="input-group">
+                    <label>Напрямок доставки:</label>
+                    <select id="in-reg" onchange="calculate()">
+                        <option value="1200">Європа (Польща/Литва)</option>
+                        <option value="1500">Європа (Німеччина/Естонія)</option>
+                        <option value="3400">США (Аукціон Copart/IAAI)</option>
+                    </select>
+                </div>
+            </div>
 
-        <div class="input-group">
-            <label>Марка авто</label>
-            <select id="make">
-                <option value="Audi">Audi</option><option value="BMW">BMW</option>
-                <option value="Mercedes-Benz">Mercedes-Benz</option><option value="Volkswagen">Volkswagen</option>
-                <option value="Toyota">Toyota</option><option value="Skoda">Skoda</option>
-            </select>
-        </div>
+            <div class="calc-box">
+                <div class="row"><span>Вартість авто:</span><span id="res-price">$0</span></div>
+                <div class="row"><span>Доставка та збори:</span><span id="res-deliv">$0</span></div>
+                <div class="row"><span>Митні платежі:</span><span id="res-tax">$0</span></div>
+                <div class="total" id="res-total">РАЗОМ: $0</div>
+            </div>
 
-        <div style="display: flex; gap: 10px;">
-            <div class="input-group" style="flex: 1;"><label>Рік</label><select id="year"></select></div>
-            <div class="input-group" style="flex: 1;"><label>Ціна</label><input type="number" id="price" placeholder="1000"></div>
-        </div>
-
-        <button class="calc-btn btn-blue" onclick="calculate()">💰 Порахувати</button>
-        <button class="calc-btn btn-green" onclick="subscribe()">🔔 Підписатись на оновлення</button>
-
-        <div id="result" class="result">
-            <div style="color: var(--text-secondary); font-size: 14px;" id="res-label">Розмитнення:</div>
-            <div style="font-size: 24px; font-weight: 800; color: var(--accent-blue);" id="finalSum">0 €</div>
+            <button class="btn" id="main-action" onclick="order()">ЗАМОВИТИ КОНСУЛЬТАЦІЮ</button>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        let currentRegion = 'EU';
-        
-        function setRegion(r, label) {
-            currentRegion = r;
-            document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + r).classList.add('active');
-        }
+        tg.expand();
 
-        const yearSelect = document.getElementById('year');
-        for (let y = 2026; y >= 2000; y--) {
-            let opt = document.createElement('option'); opt.value = y; opt.innerHTML = y;
-            yearSelect.appendChild(opt);
+        const params = new URLSearchParams(window.location.search);
+        const carTitle = params.get('title');
+
+        if (carTitle) {
+            document.getElementById('view-title').innerText = carTitle;
+            document.getElementById('car-img').src = params.get('img');
+            document.getElementById('car-img').style.display = 'block';
+            document.getElementById('calc-inputs').style.display = 'none';
+            document.getElementById('main-action').innerText = "ЗВ'ЯЗАТИСЬ З МЕНЕДЖЕРОМ";
+            updateValues(12500, 3400); 
         }
 
         function calculate() {
-            const price = parseFloat(document.getElementById('price').value) || 0;
-            let total = price * 1.3 + 1200; // Спрощена формула
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('finalSum').innerText = Math.round(total).toLocaleString() + ' €';
+            let p = parseInt(document.getElementById('in-price').value) || 0;
+            let d = parseInt(document.getElementById('in-reg').value);
+            updateValues(p, d);
         }
 
-        function subscribe() {
-            const make = document.getElementById('make').value;
-            const year = document.getElementById('year').value;
-            tg.sendData(`sub|${make}|${year}|${currentRegion}`);
-            tg.close();
+        function updateValues(price, delivery) {
+            let tax = price * 0.3; // Орієнтовне розмитнення
+            let total = price + delivery + tax + 500;
+
+            document.getElementById('res-price').innerText = "$" + price.toLocaleString();
+            document.getElementById('res-deliv').innerText = "$" + delivery.toLocaleString();
+            document.getElementById('res-tax').innerText = "$" + Math.round(tax).toLocaleString();
+            document.getElementById('res-total').innerText = "ПІД КЛЮЧ: $" + Math.round(total).toLocaleString();
+        }
+
+        function order() {
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.openTelegramLink("https://t.me/byklya_top");
         }
     </script>
 </body>
