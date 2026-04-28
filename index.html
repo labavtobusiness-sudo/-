@@ -16,200 +16,41 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0; padding: 15px;
-            display: flex; flex-direction: column; align-items: center;
+            background-color: var(--bg-color); color: var(--text-main);
+            margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center;
         }
 
-        .header { text-align: center; margin-bottom: 15px; position: relative; width: 100%; }
-        
-        /* Контейнер для фото/логотипу авто */
+        .header { text-align: center; margin-bottom: 15px; width: 100%; }
         .car-photo-container {
-            width: 100%;
-            height: 120px;
-            background: #252527;
-            border-radius: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 1px solid #333;
+            width: 100%; height: 120px; background: #252527;
+            border-radius: 20px; margin-bottom: 15px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border: 1px solid #333;
         }
-
-        .car-photo-container img {
-            max-width: 80%;
-            max-height: 80%;
-            object-fit: contain;
-            transition: 0.3s;
-        }
+        .car-photo-container img { max-width: 80%; max-height: 80%; object-fit: contain; }
 
         .container {
-            width: 100%; max-width: 400px;
-            background: var(--card-bg);
-            padding: 20px; border-radius: 24px;
-            box-sizing: border-box; border: 1px solid #2c2c2e;
+            width: 100%; max-width: 400px; background: var(--card-bg);
+            padding: 20px; border-radius: 24px; box-sizing: border-box; border: 1px solid #2c2c2e;
         }
 
-        .region-selector {
-            display: flex; background: #2c2c2e;
-            padding: 4px; border-radius: 14px; margin-bottom: 20px;
-        }
-
-        .region-btn {
-            flex: 1; padding: 10px; border-radius: 11px;
-            border: none; background: none; color: var(--text-secondary);
-            font-weight: 600; cursor: pointer;
-        }
-
+        .region-selector { display: flex; background: #2c2c2e; padding: 4px; border-radius: 14px; margin-bottom: 20px; }
+        .region-btn { flex: 1; padding: 10px; border-radius: 11px; border: none; background: none; color: var(--text-secondary); font-weight: 600; cursor: pointer; }
         .region-btn.active { background: var(--accent-blue); color: white; }
 
         .input-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+        select, input { width: 100%; padding: 14px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 14px; color: #fff; font-size: 16px; box-sizing: border-box; }
 
-        select, input {
-            width: 100%; padding: 14px;
-            background: #2c2c2e; border: 1px solid #3a3a3c;
-            border-radius: 14px; color: #fff; font-size: 16px; box-sizing: border-box;
-        }
+        .calc-btn { width: 100%; border: none; padding: 18px; border-radius: 16px; font-weight: bold; font-size: 17px; cursor: pointer; margin-top: 10px; }
+        .btn-blue { background: var(--accent-blue); color: #fff; }
+        .btn-green { background: #28a745; color: #fff; margin-top: 10px; }
 
-        .calc-btn {
-            width: 100%; background: var(--accent-blue);
-            color: #fff; border: none; padding: 18px;
-            border-radius: 16px; font-weight: bold; font-size: 18px;
-            margin-top: 10px;
-        }
-
-        .result {
-            margin-top: 20px; padding: 15px;
-            background: rgba(52, 168, 235, 0.1);
-            border-radius: 16px; display: none;
-            text-align: center; border: 1px solid var(--accent-blue);
-        }
-
+        .result { margin-top: 20px; padding: 15px; background: rgba(52, 168, 235, 0.1); border-radius: 16px; display: none; text-align: center; border: 1px solid var(--accent-blue); }
         .result-val { font-size: 26px; font-weight: 800; color: var(--accent-blue); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="car-photo-container" id="car-display">
-            <span id="placeholder-text" style="color: #444; font-size: 40px;">🚙</span>
-            <img id="car-logo" src="" style="display: none;">
-        </div>
-        <h1 id="brand-title">@RozmytnyAvto</h1>
-    </div>
-
-    <div class="container">
-        <div class="region-selector">
-            <button class="region-btn active" id="btn-eu" onclick="setRegion('EU')">Європа 🇪🇺</button>
-            <button class="region-btn" id="btn-usa" onclick="setRegion('USA')">США 🇺🇸</button>
-        </div>
-
-        <div class="input-group">
-            <label>Марка авто</label>
-            <select id="make" onchange="updateBrandView()">
-                <option value="">Оберіть марку...</option>
-                <option value="Audi">Audi</option>
-                <option value="BMW">BMW</option>
-                <option value="Mercedes-Benz">Mercedes-Benz</option>
-                <option value="Volkswagen">Volkswagen</option>
-                <option value="Toyota">Toyota</option>
-                <option value="Tesla">Tesla</option>
-                <option value="Ford">Ford</option>
-                <option value="Skoda">Skoda</option>
-                <option value="Hyundai">Hyundai</option>
-                <option value="Kia">Kia</option>
-            </select>
-        </div>
-
-        <div style="display: flex; gap: 10px;">
-            <div class="input-group" style="flex: 1;">
-                <label>Рік</label>
-                <select id="year"></select>
-            </div>
-            <div class="input-group" style="flex: 1;">
-                <label>Об'єм (л)</label>
-                <select id="engine">
-                    <option value="1.5">1.5 л</option>
-                    <option value="2.0" selected>2.0 л</option>
-                    <option value="3.0">3.0 л</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label id="price-label">Ціна (€)</label>
-            <input type="number" id="price" placeholder="Сума">
-        </div>
-
-        <button class="calc-btn" onclick="calculate()">Порахувати</button>
-
-        <div id="result" class="result">
-            <div class="result-val" id="finalSum">0 €</div>
-        </div>
-    </div>
-
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        // Функція оновлення фото/логотипу
-        function updateBrandView() {
-            const make = document.getElementById('make').value;
-            const logoImg = document.getElementById('car-logo');
-            const placeholder = document.getElementById('placeholder-text');
-            const title = document.getElementById('brand-title');
-
-            if (make) {
-                // Використовуємо прозорі логотипи з відкритого API
-                logoImg.src = `https://logo.clearbit.com/${make.toLowerCase().replace(' ', '')}.com`;
-                logoImg.style.display = 'block';
-                placeholder.style.display = 'none';
-                title.innerText = `@RozmytnyAvto | ${make}`;
-            } else {
-                logoImg.style.display = 'none';
-                placeholder.style.display = 'block';
-                title.innerText = '@RozmytnyAvto';
-            }
-        }
-
-        // Автоматичне заповнення років
-        const yearSelect = document.getElementById('year');
-        for (let y = 2026; y >= 2000; y--) {
-            let opt = document.createElement('option');
-            opt.value = y; opt.innerHTML = y;
-            yearSelect.appendChild(opt);
-        }
-
-        let currentRegion = 'EU';
-        function setRegion(r) {
-            currentRegion = r;
-            document.getElementById('btn-eu').classList.toggle('active', r === 'EU');
-            document.getElementById('btn-usa').classList.toggle('active', r === 'USA');
-        }
-
-        function calculate() {
-            const price = parseFloat(document.getElementById('price').value) || 0;
-            if (price === 0) return;
-            
-            // Спрощена логіка розрахунку для прикладу
-            let total = price * 1.35 + (currentRegion === 'EU' ? 1500 : 3500);
-            
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('finalSum').innerText = Math.round(total).toLocaleString() + ' €';
-            tg.HapticFeedback.impactOccurred('medium');
-        }
-
-        // Якщо бот передав дані через URL - підтягуємо їх
-        window.onload = function() {
-            const params = new URLSearchParams(window.location.search);
-            if(params.get('make')) {
-                document.getElementById('make').value = params.get('make');
-                updateBrandView();
-            }
-        };
-    </script>
-</body>
-</html>
+        <div class="car-photo-container
