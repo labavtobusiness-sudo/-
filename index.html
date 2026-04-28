@@ -3,56 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LabAvtoBusiness Premium</title>
+    <title>LabAvtoBusiness Calc</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1c; --blue: #34a8eb; --text: #ffffff; --sec: #9ea0a3; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        .container { background: var(--card); border-radius: 28px; border: 1px solid #2c2c2e; overflow: hidden; max-width: 400px; margin: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
-        .car-img { width: 100%; height: 220px; object-fit: cover; background: #252527; display: none; }
+        .container { background: var(--card); border-radius: 28px; border: 1px solid #2c2c2e; overflow: hidden; max-width: 400px; margin: auto; }
+        .car-img { width: 100%; height: 210px; object-fit: cover; background: #252527; }
         .p-20 { padding: 20px; }
-        .title { font-size: 22px; font-weight: 800; margin-bottom: 5px; text-align: center; }
-        .calc-box { background: rgba(52, 168, 235, 0.08); padding: 18px; border-radius: 22px; border: 1px solid rgba(52, 168, 235, 0.2); margin: 15px 0; }
+        .title { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 15px; text-transform: uppercase; }
+        .calc-box { background: rgba(52, 168, 235, 0.08); padding: 18px; border-radius: 20px; border: 1px solid rgba(52, 168, 235, 0.2); }
         .row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: var(--sec); }
-        .total { font-size: 28px; font-weight: 900; color: var(--blue); text-align: center; border-top: 1px solid #333; padding-top: 15px; margin-top: 10px; }
-        .btn { width: 100%; padding: 18px; background: var(--blue); border: none; border-radius: 18px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); }
-        .input-group { margin-bottom: 15px; }
-        label { font-size: 11px; color: var(--sec); margin-left: 5px; }
-        input, select { width: 100%; padding: 14px; margin-top: 5px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 15px; color: #fff; box-sizing: border-box; }
+        .total { font-size: 24px; font-weight: 900; color: var(--blue); text-align: center; border-top: 1px solid #333; padding-top: 15px; margin-top: 10px; }
+        .btn { width: 100%; padding: 18px; background: var(--blue); border: none; border-radius: 18px; color: white; font-weight: bold; margin-top: 15px; }
+        input { width: 100%; padding: 14px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 15px; color: #fff; text-align: center; font-size: 18px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img id="car-img" src="" class="car-img">
+        <img id="car-img" src="" class="car-img" style="display:none;">
         <div class="p-20">
-            <div id="view-title" class="title">SMART КАЛЬКУЛЯТОР 2026</div>
-            <p id="sub-title" style="text-align:center; font-size:12px; color:var(--sec); margin-top:0;">@RozmytnyAvto</p>
+            <div id="view-title" class="title">Smart Калькулятор 2026</div>
             
-            <div id="calc-inputs">
-                <div class="input-group">
-                    <label>Ціна автомобіля (€/$):</label>
-                    <input type="number" id="in-price" placeholder="8500" oninput="calculate()">
-                </div>
-                <div class="input-group">
-                    <label>Напрямок доставки:</label>
-                    <select id="in-reg" onchange="calculate()">
-                        <option value="1200">Європа (Польща/Литва)</option>
-                        <option value="1500">Європа (Німеччина/Естонія)</option>
-                        <option value="3400">США (Аукціон Copart/IAAI)</option>
-                    </select>
-                </div>
+            <div id="inputs">
+                <label style="font-size:11px; color:var(--sec);">Ціна лота:</label>
+                <input type="number" id="in-price" placeholder="2000" oninput="run()">
             </div>
 
-            <div class="calc-box">
-                <div class="row"><span>Вартість авто:</span><span id="res-price">$0</span></div>
-                <div class="row"><span>Доставка та збори:</span><span id="res-deliv">$0</span></div>
-                <div class="row"><span>Митні платежі:</span><span id="res-tax">$0</span></div>
-                <div class="total" id="res-total">РАЗОМ: $0</div>
+            <div class="calc-box" style="margin-top:15px;">
+                <div class="row"><span>Вартість авто:</span><span id="res-price">0</span></div>
+                <div class="row"><span>Послуги та доставка:</span><span id="res-service">0</span></div>
+                <div class="row"><span>Митні платежі:</span><span id="res-tax">0</span></div>
+                <div class="total" id="res-total">РАЗОМ: 0</div>
             </div>
 
-            <button class="btn" id="main-action" onclick="order()">ЗАМОВИТИ КОНСУЛЬТАЦІЮ</button>
+            <button class="btn" onclick="tg.openTelegramLink('https://t.me/byklya_top')">ОФОРМИТИ ЗАЯВКУ</button>
         </div>
     </div>
 
@@ -61,36 +47,40 @@
         tg.expand();
 
         const params = new URLSearchParams(window.location.search);
-        const carTitle = params.get('title');
+        const cur = params.get('cur') || '€';
+        const isMil = params.get('mode')?.includes('Військових');
+        const country = params.get('ct') || '';
 
-        if (carTitle) {
-            document.getElementById('view-title').innerText = carTitle;
+        if (params.get('title')) {
+            document.getElementById('view-title').innerText = params.get('title');
             document.getElementById('car-img').src = params.get('img');
             document.getElementById('car-img').style.display = 'block';
-            document.getElementById('calc-inputs').style.display = 'none';
-            document.getElementById('main-action').innerText = "ЗВ'ЯЗАТИСЬ З МЕНЕДЖЕРОМ";
-            updateValues(12500, 3400); 
+            document.getElementById('inputs').style.display = 'none';
+            run(3500); 
         }
 
-        function calculate() {
-            let p = parseInt(document.getElementById('in-price').value) || 0;
-            let d = parseInt(document.getElementById('in-reg').value);
-            updateValues(p, d);
-        }
+        function run(p_val) {
+            let p = p_val || parseInt(document.getElementById('in-price').value) || 0;
+            let service = 0;
+            
+            // Логіка цін на послуги
+            if (country.includes('США')) {
+                service = 3200; // Долари
+            } else if (isMil) {
+                service = 1300; // Військові (Литва)
+            } else if (country.includes('Литва')) {
+                service = 1300;
+            } else {
+                service = 1600; // Інші країни ЄС
+            }
 
-        function updateValues(price, delivery) {
-            let tax = price * 0.3; // Орієнтовне розмитнення
-            let total = price + delivery + tax + 500;
+            let tax = isMil ? 150 : p * 0.28; // Пільга або середня ставка
+            let total = p + service + tax;
 
-            document.getElementById('res-price').innerText = "$" + price.toLocaleString();
-            document.getElementById('res-deliv').innerText = "$" + delivery.toLocaleString();
-            document.getElementById('res-tax').innerText = "$" + Math.round(tax).toLocaleString();
-            document.getElementById('res-total').innerText = "ПІД КЛЮЧ: $" + Math.round(total).toLocaleString();
-        }
-
-        function order() {
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.openTelegramLink("https://t.me/byklya_top");
+            document.getElementById('res-price').innerText = cur + p.toLocaleString();
+            document.getElementById('res-service').innerText = cur + service.toLocaleString();
+            document.getElementById('res-tax').innerText = cur + Math.round(tax).toLocaleString();
+            document.getElementById('res-total').innerText = "ПІД КЛЮЧ: " + cur + Math.round(total).toLocaleString();
         }
     </script>
 </body>
