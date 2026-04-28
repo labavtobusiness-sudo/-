@@ -40,14 +40,15 @@
 
         .input-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
-        select, input { width: 100%; padding: 14px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 14px; color: #fff; font-size: 16px; box-sizing: border-box; }
+        select, input { width: 100%; padding: 14px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 14px; color: #fff; font-size: 16px; box-sizing: border-box; outline: none; }
 
-        .calc-btn { width: 100%; border: none; padding: 18px; border-radius: 16px; font-weight: bold; font-size: 17px; cursor: pointer; margin-top: 10px; }
-        .btn-blue { background: var(--accent-blue); color: #fff; }
-        .btn-green { background: #28a745; color: #fff; margin-top: 10px; }
+        .calc-btn { width: 100%; border: none; padding: 18px; border-radius: 16px; font-weight: bold; font-size: 17px; cursor: pointer; transition: 0.2s; }
+        .btn-blue { background: var(--accent-blue); color: #fff; margin-top: 10px; }
+        .btn-green { background: #28a745; color: #fff; margin-top: 12px; }
+        .btn-blue:active, .btn-green:active { opacity: 0.8; transform: scale(0.98); }
 
         .result { margin-top: 20px; padding: 15px; background: rgba(52, 168, 235, 0.1); border-radius: 16px; display: none; text-align: center; border: 1px solid var(--accent-blue); }
-        .result-val { font-size: 26px; font-weight: 800; color: var(--accent-blue); }
+        .result-val { font-size: 26px; font-weight: 800; color: var(--accent-blue); margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -70,11 +71,19 @@
             <label>Марка авто</label>
             <select id="make" onchange="updateBrandView()">
                 <option value="">Оберіть марку...</option>
-                <option value="Audi">Audi</option><option value="BMW">BMW</option>
-                <option value="Mercedes-Benz">Mercedes-Benz</option><option value="Volkswagen">Volkswagen</option>
-                <option value="Toyota">Toyota</option><option value="Tesla">Tesla</option>
-                <option value="Ford">Ford</option><option value="Skoda">Skoda</option>
-                <option value="Hyundai">Hyundai</option><option value="Kia">Kia</option>
+                <option value="Audi">Audi</option>
+                <option value="BMW">BMW</option>
+                <option value="Mercedes-Benz">Mercedes-Benz</option>
+                <option value="Volkswagen">Volkswagen</option>
+                <option value="Toyota">Toyota</option>
+                <option value="Tesla">Tesla</option>
+                <option value="Ford">Ford</option>
+                <option value="Skoda">Skoda</option>
+                <option value="Hyundai">Hyundai</option>
+                <option value="Kia">Kia</option>
+                <option value="Renault">Renault</option>
+                <option value="Mazda">Mazda</option>
+                <option value="Nissan">Nissan</option>
             </select>
         </div>
 
@@ -82,20 +91,26 @@
             <div class="input-group" style="flex: 1;"><label>Рік</label><select id="year"></select></div>
             <div class="input-group" style="flex: 1;"><label>Об'єм (л)</label>
                 <select id="engine">
-                    <option value="1.5">1.5 л</option><option value="2.0" selected>2.0 л</option><option value="3.0">3.0 л</option>
+                    <option value="1.0">1.0 л</option>
+                    <option value="1.5">1.5 л</option>
+                    <option value="2.0" selected>2.0 л</option>
+                    <option value="2.5">2.5 л</option>
+                    <option value="3.0">3.0 л</option>
+                    <option value="4.0">4.0 л</option>
                 </select>
             </div>
         </div>
 
         <div class="input-group">
-            <label id="price-label">Ціна (€)</label>
-            <input type="number" id="price" placeholder="Сума">
+            <label id="price-label">Ціна в ЄС (€)</label>
+            <input type="number" id="price" placeholder="Наприклад: 12000">
         </div>
 
-        <button class="calc-btn btn-blue" onclick="calculate()">Порахувати</button>
-        <button class="calc-btn btn-green" onclick="subscribeToUpdates()">🔔 Підписатись на оновлення</button>
+        <button class="calc-btn btn-blue" onclick="calculate()">💰 Порахувати розмитнення</button>
+        <button class="calc-btn btn-green" onclick="subscribeToUpdates()">🔔 Підписатись на моніторинг</button>
 
         <div id="result" class="result">
+            <div style="font-size: 13px; color: var(--text-secondary);">Орієнтовно під ключ:</div>
             <div class="result-val" id="finalSum">0 €</div>
         </div>
     </div>
@@ -109,7 +124,7 @@
             currentRegion = r;
             document.getElementById('btn-eu').classList.toggle('active', r === 'EU');
             document.getElementById('btn-usa').classList.toggle('active', r === 'USA');
-            document.getElementById('price-label').innerText = r === 'EU' ? 'Ціна (€)' : 'Ціна ($)';
+            document.getElementById('price-label').innerText = r === 'EU' ? 'Ціна в ЄС (€)' : 'Ціна на аукціоні ($)';
         }
 
         function updateBrandView() {
@@ -119,6 +134,8 @@
             if (make) {
                 logoImg.src = `https://logo.clearbit.com/${make.toLowerCase().replace(' ', '')}.com`;
                 logoImg.style.display = 'block'; placeholder.style.display = 'none';
+            } else {
+                logoImg.style.display = 'none'; placeholder.style.display = 'block';
             }
         }
 
@@ -130,8 +147,9 @@
 
         function calculate() {
             const price = parseFloat(document.getElementById('price').value) || 0;
-            if (price === 0) return;
-            let total = price * 1.35 + (currentRegion === 'EU' ? 1400 : 3200);
+            if (price === 0) { tg.showAlert("Введіть ціну!"); return; }
+            
+            let total = price * 1.32 + (currentRegion === 'EU' ? 1450 : 3400);
             document.getElementById('result').style.display = 'block';
             document.getElementById('finalSum').innerText = Math.round(total).toLocaleString() + ' €';
             tg.HapticFeedback.impactOccurred('medium');
@@ -140,7 +158,9 @@
         function subscribeToUpdates() {
             const make = document.getElementById('make').value;
             const year = document.getElementById('year').value;
-            if (!make) { tg.showAlert("Оберіть марку!"); return; }
+            if (!make) { tg.showAlert("Спочатку оберіть марку авто!"); return; }
+            
+            // Відправка команди: sub|Марка|Рік|Регіон
             tg.sendData(`sub|${make}|${year}|${currentRegion}`);
             tg.close();
         }
