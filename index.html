@@ -7,211 +7,195 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
+            --bg-color: #0f0f0f;
+            --card-bg: #1a1a1c;
             --accent-blue: #34a8eb;
             --text-main: #ffffff;
-            --text-secondary: #8e8e93;
+            --text-secondary: #9ea0a3;
         }
 
         body {
-            font-family: -apple-system, system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0; padding: 15px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .header img {
-            width: 120px;
-            margin-bottom: 10px;
-        }
-
-        .header h1 {
-            font-size: 20px;
-            margin: 0;
-            color: var(--accent-blue);
-        }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 18px; color: var(--accent-blue); margin-top: 10px; }
 
         .container {
-            width: 100%;
-            max-width: 400px;
+            width: 100%; max-width: 400px;
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 24px;
-            box-sizing: border-box;
+            padding: 20px; border-radius: 24px;
+            box-sizing: border-box; border: 1px solid #2c2c2e;
         }
 
-        /* Сітка марок авто */
-        .brand-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+        /* Перемикач ЄС / США */
+        .region-selector {
+            display: flex;
+            background: #2c2c2e;
+            padding: 4px;
+            border-radius: 14px;
             margin-bottom: 20px;
         }
 
-        .brand-item {
-            background: #2c2c2e;
-            padding: 10px;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            border: 2px solid transparent;
+        .region-btn {
+            flex: 1; padding: 10px;
+            border-radius: 11px;
+            border: none; background: none;
+            color: var(--text-secondary);
+            font-weight: 600; cursor: pointer;
             transition: 0.2s;
         }
 
-        .brand-item.active {
-            border-color: var(--accent-blue);
-            background: #3a3a3c;
+        .region-btn.active {
+            background: var(--accent-blue);
+            color: white;
         }
 
-        .brand-item span {
-            display: block;
-            font-size: 11px;
-            margin-top: 5px;
-            text-transform: uppercase;
-        }
-
-        /* Поля вводу */
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            margin-left: 5px;
-        }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; margin-left: 5px; }
 
         select, input {
-            width: 100%;
-            padding: 14px;
-            background: #2c2c2e;
-            border: 1px solid #3a3a3c;
-            border-radius: 14px;
-            color: #fff;
-            font-size: 16px;
-            appearance: none;
-            box-sizing: border-box;
+            width: 100%; padding: 14px;
+            background: #2c2c2e; border: 1px solid #3a3a3c;
+            border-radius: 14px; color: #fff;
+            font-size: 16px; box-sizing: border-box;
+            outline: none;
         }
 
+        select:focus, input:focus { border-color: var(--accent-blue); }
+
         .calc-btn {
-            width: 100%;
-            background: var(--accent-blue);
-            color: #fff;
-            border: none;
-            padding: 18px;
-            border-radius: 16px;
-            font-weight: bold;
-            font-size: 18px;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(52, 168, 235, 0.3);
+            width: 100%; background: var(--accent-blue);
+            color: #fff; border: none;
+            padding: 18px; border-radius: 16px;
+            font-weight: bold; font-size: 18px;
+            margin-top: 10px; cursor: pointer;
         }
 
         .result {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 20px; padding: 15px;
             background: rgba(52, 168, 235, 0.1);
-            border-radius: 16px;
-            display: none;
-            text-align: center;
-            border: 1px dashed var(--accent-blue);
+            border-radius: 16px; display: none;
+            text-align: center; border: 1px solid var(--accent-blue);
         }
 
-        .result-val {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--accent-blue);
-        }
-
-        .footer {
-            margin-top: 20px;
-            font-size: 10px;
-            color: var(--text-secondary);
-            text-align: center;
-        }
+        .result-val { font-size: 26px; font-weight: 800; color: var(--accent-blue); margin-top: 5px; }
+        .footer { margin-top: 20px; font-size: 11px; color: var(--text-secondary); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div style="font-size: 40px; color: var(--accent-blue); margin-bottom: 5px;">🔵</div>
-        <h1>Калькулятор<br>@RozmytnyAvto</h1>
+        <div style="font-size: 45px;">🔵</div>
+        <h1>@RozmytnyAvto</h1>
     </div>
 
     <div class="container">
-        <label>Оберіть марку:</label>
-        <div class="brand-grid" id="brandGrid">
-            <div class="brand-item" onclick="selectBrand(this, 'Audi')"><span>Audi</span></div>
-            <div class="brand-item" onclick="selectBrand(this, 'BMW')"><span>BMW</span></div>
-            <div class="brand-item" onclick="selectBrand(this, 'Mercedes')"><span>Mercedes</span></div>
-            <div class="brand-item" onclick="selectBrand(this, 'VW')"><span>VW</span></div>
-            <div class="brand-item" onclick="selectBrand(this, 'Toyota')"><span>Toyota</span></div>
-            <div class="brand-item" onclick="selectBrand(this, 'Skoda')"><span>Skoda</span></div>
+        <label>Регіон купівлі:</label>
+        <div class="region-selector">
+            <button class="region-btn active" id="btn-eu" onclick="setRegion('EU')">Європа 🇪🇺</button>
+            <button class="region-btn" id="btn-usa" onclick="setRegion('USA')">США 🇺🇸</button>
         </div>
 
         <div class="input-group">
-            <label>Рік випуску</label>
-            <select id="year"></select>
-        </div>
-
-        <div class="input-group">
-            <label>Об'єм двигуна (літри)</label>
-            <select id="engine">
-                <option value="1.0">1.0 л</option>
-                <option value="1.5">1.5 л</option>
-                <option value="2.0" selected>2.0 л</option>
-                <option value="2.5">2.5 л</option>
-                <option value="3.0">3.0 л</option>
-                <option value="4.0">4.0 л</option>
+            <label>Марка авто</label>
+            <select id="make">
+                <option value="">Оберіть марку...</option>
+                <option value="Acura">Acura</option>
+                <option value="Alfa Romeo">Alfa Romeo</option>
+                <option value="Audi">Audi</option>
+                <option value="BMW">BMW</option>
+                <option value="Cadillac">Cadillac</option>
+                <option value="Chevrolet">Chevrolet</option>
+                <option value="Chrysler">Chrysler</option>
+                <option value="Citroen">Citroen</option>
+                <option value="Dodge">Dodge</option>
+                <option value="Fiat">Fiat</option>
+                <option value="Ford">Ford</option>
+                <option value="Honda">Honda</option>
+                <option value="Hyundai">Hyundai</option>
+                <option value="Infiniti">Infiniti</option>
+                <option value="Jaguar">Jaguar</option>
+                <option value="Jeep">Jeep</option>
+                <option value="Kia">Kia</option>
+                <option value="Land Rover">Land Rover</option>
+                <option value="Lexus">Lexus</option>
+                <option value="Mazda">Mazda</option>
+                <option value="Mercedes-Benz">Mercedes-Benz</option>
+                <option value="Mini">Mini</option>
+                <option value="Mitsubishi">Mitsubishi</option>
+                <option value="Nissan">Nissan</option>
+                <option value="Opel">Opel</option>
+                <option value="Peugeot">Peugeot</option>
+                <option value="Porsche">Porsche</option>
+                <option value="Renault">Renault</option>
+                <option value="Skoda">Skoda</option>
+                <option value="Subaru">Subaru</option>
+                <option value="Tesla">Tesla</option>
+                <option value="Toyota">Toyota</option>
+                <option value="Volkswagen">Volkswagen</option>
+                <option value="Volvo">Volvo</option>
             </select>
         </div>
 
-        <div class="input-group">
-            <label>Ціна в ЄС (€)</label>
-            <input type="number" id="price" placeholder="Наприклад: 12000">
+        <div style="display: flex; gap: 10px;">
+            <div class="input-group" style="flex: 1;">
+                <label>Рік</label>
+                <select id="year"></select>
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <label>Об'єм (л)</label>
+                <select id="engine">
+                    <option value="1.0">1.0 л</option>
+                    <option value="1.5">1.5 л</option>
+                    <option value="2.0" selected>2.0 л</option>
+                    <option value="2.5">2.5 л</option>
+                    <option value="3.0">3.0 л</option>
+                    <option value="4.0">4.0 л</option>
+                    <option value="5.0">5.0 л</option>
+                </select>
+            </div>
         </div>
 
-        <button class="calc-btn" onclick="calculate()">Розрахувати</button>
+        <div class="input-group">
+            <label id="price-label">Ціна в ЄС (€)</label>
+            <input type="number" id="price" placeholder="Введіть суму">
+        </div>
+
+        <button class="calc-btn" onclick="calculate()">Розрахувати вартість</button>
 
         <div id="result" class="result">
-            <div style="font-size: 14px; margin-bottom: 5px;">Орієнтовна вартість "під ключ":</div>
+            <div id="res-desc" style="font-size: 13px; color: var(--text-secondary);">Під ключ в Україні:</div>
             <div class="result-val" id="finalSum">0 €</div>
         </div>
     </div>
 
-    <div class="footer">
-        Telegram Mini App v2.0 | @RozmytnyAvto
-    </div>
+    <div class="footer">Калькулятор @RozmytnyAvto | 2026</div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        let selectedBrand = "";
+        let currentRegion = 'EU';
 
-        // Генерація років від 2000 до 2026
+        // Роки від 2000 до 2026
         const yearSelect = document.getElementById('year');
         for (let y = 2026; y >= 2000; y--) {
             let opt = document.createElement('option');
-            opt.value = y;
-            opt.innerHTML = y;
+            opt.value = y; opt.innerHTML = y;
+            if(y === 2021) opt.selected = true;
             yearSelect.appendChild(opt);
         }
 
-        function selectBrand(el, brand) {
-            document.querySelectorAll('.brand-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            selectedBrand = brand;
+        function setRegion(region) {
+            currentRegion = region;
+            document.getElementById('btn-eu').classList.toggle('active', region === 'EU');
+            document.getElementById('btn-usa').classList.toggle('active', region === 'USA');
+            document.getElementById('price-label').innerText = region === 'EU' ? 'Ціна в ЄС (€)' : 'Ціна на аукціоні ($)';
+            document.getElementById('price').placeholder = region === 'EU' ? 'Наприклад: 8000' : 'Наприклад: 4500';
         }
 
         function calculate() {
@@ -219,26 +203,33 @@
             const year = parseInt(document.getElementById('year').value);
             const engine = parseFloat(document.getElementById('engine').value);
 
-            if (price === 0) {
-                tg.showAlert("Будь ласка, введіть ціну авто!");
+            if (price <= 0) {
+                tg.showAlert("Введіть вартість авто!");
                 return;
             }
 
-            // Логіка розрахунку (спрощена)
             let age = 2026 - year;
             if (age < 1) age = 1;
             
-            let duty = price * 0.10; // Мито 10%
-            let excise = 50 * engine * age; // Акциз (базова ставка * об'єм * роки)
-            let vat = (price + duty + excise) * 0.20; // ПДВ 20%
-            let services = 2800; // Послуги (доставка, брокер, сертифікація тощо)
+            // Базове розмитнення
+            let duty = price * 0.10; 
+            let excise = 50 * engine * age; 
+            let vat = (price + duty + excise) * 0.20;
+            let taxes = duty + excise + vat;
 
-            let total = price + duty + excise + vat + services;
+            let total = 0;
+            if (currentRegion === 'EU') {
+                // Витрати ЄС: Доставка (~800€) + Брокер/Сертифікат (~600€) + Наші послуги
+                total = price + taxes + 1400 + 500;
+            } else {
+                // Витрати США: Аукціонний збір (~700$) + Доставка морем/сушею (~2500$) + Брокер/Експерт/Порт (~1200$)
+                let costsUSA = 700 + 2500 + 1200 + 800; // Умовні $
+                total = (price + costsUSA) * 0.92 + taxes; // Конвертація частини в Євро
+            }
 
             document.getElementById('result').style.display = 'block';
             document.getElementById('finalSum').innerText = Math.round(total).toLocaleString() + ' €';
-            
-            tg.HapticFeedback.notificationOccurred('success');
+            tg.HapticFeedback.impactOccurred('medium');
         }
     </script>
 </body>
