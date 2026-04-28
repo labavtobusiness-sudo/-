@@ -1,139 +1,90 @@
-import asyncio
-import logging
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.filters import Command
-from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
-from aiogram.types import WebAppInfo
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AutoImport Pro</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #000; color: #fff; margin: 0; padding: 20px; }
+        .container { background: #1c1c1e; padding: 20px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { font-size: 22px; color: #30d158; text-align: center; margin-bottom: 25px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; color: #8e8e93; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 12px; color: #fff; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; background: #30d158; color: #000; border: none; padding: 16px; border-radius: 12px; font-weight: bold; font-size: 17px; margin-top: 15px; transition: transform 0.1s; }
+        button:active { transform: scale(0.98); }
+        .result { margin-top: 25px; padding: 15px; background: #2c2c2e; border-radius: 15px; display: none; text-align: center; }
+        .total-price { font-size: 28px; font-weight: 800; color: #30d158; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Smart Calc 2026</h1>
+        
+        <div class="input-group">
+            <label>Марка та модель</label>
+            <input type="text" id="car_name" placeholder="Введіть авто">
+        </div>
 
-# Налаштування логування
-logging.basicConfig(level=logging.INFO)
+        <div style="display: flex; gap: 10px;">
+            <div class="input-group" style="flex: 1;">
+                <label>Рік</label>
+                <input type="number" id="year" value="2021">
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <label>Об'єм (л)</label>
+                <input type="number" id="engine" step="0.1" value="2.0">
+            </div>
+        </div>
 
-# --- КОНФІГУРАЦІЯ (ВАШІ ДАНІ) ---
-TOKEN = "8731368096:AAHhjatIIaBnEBHlWWFzGqz_eISTjCTLTLI"
-ADMIN_ID = 7934542527
-# ВСТАВТЕ ВАШЕ ПОСИЛАННЯ З GITHUB PAGES НИЖЧЕ
-WEB_APP_URL = "https://your-username.github.io/car-calc/" 
+        <div class="input-group">
+            <label>Ціна в ЄС (€)</label>
+            <input type="number" id="price" placeholder="10000">
+        </div>
 
-bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-dp = Dispatcher()
-users_db = {}
+        <button onclick="calculate()">Порахувати "Під Ключ"</button>
 
-# Розширені списки
-MAKES = ["Audi", "BMW", "Mercedes-Benz", "Volkswagen", "Toyota", "Skoda", "Renault", "Ford", "Hyundai", "Tesla", "Volvo", "Lexus"]
-COUNTRIES = ["Литва 🇱🇹", "Німеччина 🇩🇪", "Польща 🇵🇱", "Латвія 🇱🇻", "Естонія 🇪🇪", "Грузія 🇬🇪", "США 🇺🇸"]
-YEARS = [str(y) for y in range(2026, 1999, -2)] # Вибір років від 2000
-PRICE_RANGES = ["1500-4000€", "4000-8000€", "8000-15000€", "15000-25000€", "25000€+"]
+        <div id="result" class="result">
+            <span style="color: #8e8e93;">Вартість з розмитненням та послугами:</span>
+            <div class="total-price" id="final-sum">0 €</div>
+        </div>
+    </div>
 
-def main_menu():
-    builder = ReplyKeyboardBuilder()
-    builder.row(types.KeyboardButton(text="🪖 Для Військових (Пільги)"))
-    builder.row(types.KeyboardButton(text="🇪🇺 ЄС: Покупка (Ринок)"), types.KeyboardButton(text="🔨 ЄС: Аукціони (Торги)"))
-    builder.row(types.KeyboardButton(text="🇺🇸 США: Аукціони (Калькулятор)"))
-    builder.row(types.KeyboardButton(text="📱 Smart Калькулятор", web_app=WebAppInfo(url=WEB_APP_URL)))
-    builder.row(types.KeyboardButton(text="🏠 Головне меню"))
-    return builder.as_markup(resize_keyboard=True)
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.MainButton.hide();
 
-@dp.message(Command("start"))
-@dp.message(F.text == "🏠 Головне меню")
-async def cmd_start(message: types.Message):
-    await message.answer("🏎️ <b>Система AutoImport 2026 активована.</b>\nОберіть потрібний розділ:", reply_markup=main_menu())
+        // Підтягуємо дані з URL, якщо вони прийшли від бота
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            if(params.get('make')) document.getElementById('car_name').value = params.get('make');
+            if(params.get('year')) document.getElementById('year').value = params.get('year');
+            if(params.get('price')) document.getElementById('price').value = params.get('price');
+        };
 
-@dp.message(F.text.in_({"🪖 Для Військових (Пільги)", "🇪🇺 ЄС: Покупка (Ринок)", "🔨 ЄС: Аукціони (Торги)", "🇺🇸 США: Аукціони (Калькулятор)"}))
-async def start_logic(message: types.Message):
-    users_db[message.from_user.id] = {"mode": message.text}
-    kb = InlineKeyboardBuilder()
-    for c in COUNTRIES:
-        kb.add(types.InlineKeyboardButton(text=c, callback_data=f"set_country_{c}"))
-    kb.adjust(2)
-    await message.answer("📍 <b>Крок 1:</b> Оберіть країну пошуку:", reply_markup=kb.as_markup())
+        function calculate() {
+            let p = parseFloat(document.getElementById('price').value) || 0;
+            let y = parseInt(document.getElementById('year').value) || 2021;
+            let e = parseFloat(document.getElementById('engine').value) || 2.0;
 
-@dp.callback_query(F.data.startswith("set_country_"))
-async def set_country(callback: types.CallbackQuery):
-    country = callback.data.replace("set_country_", "")
-    users_db[callback.from_user.id]["country"] = country
-    kb = InlineKeyboardBuilder()
-    for m in sorted(MAKES): kb.add(types.InlineKeyboardButton(text=m, callback_data=f"set_make_{m}"))
-    kb.adjust(3)
-    await callback.message.edit_text(f"🌍 Країна: {country}. Оберіть марку:", reply_markup=kb.as_markup())
+            let age = 2026 - y;
+            if(age < 1) age = 1;
+            
+            let duty = p * 0.10;
+            let excise = 50 * e * age;
+            let vat = (p + duty + excise) * 0.20;
+            let service = 3200 * 0.92; // Комісія $3200 переведена в €
 
-@dp.callback_query(F.data.startswith("set_make_"))
-async def set_make(callback: types.CallbackQuery):
-    make = callback.data.replace("set_make_", "")
-    users_db[callback.from_user.id]["make"] = make
-    kb = InlineKeyboardBuilder()
-    for y in YEARS: kb.add(types.InlineKeyboardButton(text=y, callback_data=f"set_year_{y}"))
-    kb.adjust(4)
-    await callback.message.edit_text(f"🚘 Марка: {make}. Оберіть рік випуску:", reply_markup=kb.as_markup())
+            let total = p + duty + excise + vat + service;
 
-@dp.callback_query(F.data.startswith("set_year_"))
-async def set_year(callback: types.CallbackQuery):
-    year = callback.data.replace("set_year_", "")
-    users_db[callback.from_user.id]["year"] = int(year)
-    kb = InlineKeyboardBuilder()
-    for p in PRICE_RANGES: kb.add(types.InlineKeyboardButton(text=p, callback_data=f"set_price_{p}"))
-    kb.adjust(2)
-    await callback.message.edit_text(f"📅 Рік: {year}. Оберіть цінову категорію:", reply_markup=kb.as_markup())
-
-@dp.callback_query(F.data.startswith("set_price_"))
-async def final_calc(callback: types.CallbackQuery):
-    price_range = callback.data.replace("set_price_", "")
-    data = users_db.get(callback.from_user.id)
-    if not data: return
-    
-    # Середня ціна для розрахунку
-    price_val = 2500 if "1500" in price_range else 6000
-    if "8000" in price_range: price_val = 11500
-    if "15000" in price_range: price_val = 20000
-    if "25000" in price_range: price_val = 35000
-
-    is_mil = "Військових" in data["mode"]
-    is_lt = "Литва" in data.get("country", "")
-    
-    # Логіка розрахунку
-    if is_mil:
-        customs = 0
-        fee = 1300 if is_lt else 1600
-        curr = "€"
-        tax_text = "🏛️ Розмитнення: <b>0€ (Пільга ЗСУ)</b>"
-    else:
-        # Стандартне розмитнення 2026 (орієнтовно)
-        age = 2026 - data["year"]
-        age = max(1, min(15, age))
-        duty = price_val * 0.10
-        accise = 50 * 2.0 * age # за замовчуванням 2.0л
-        vat = (price_val + duty + accise) * 0.20
-        customs = duty + accise + vat
-        tax_text = f"🏛️ Розмитнення: ~<b>{customs:.0f}€</b>"
-        fee = 3200
-        curr = "$"
-
-    total_euro = price_val + customs + (fee if curr == "€" else fee * 0.92)
-
-    # Формуємо посилання для Mini App з параметрами
-    link_with_params = f"{WEB_APP_URL}?make={data['make']}&year={data['year']}&price={price_val}"
-
-    res = (f"🏁 <b>Звіт: {data['make']} {data['year']}</b>\n"
-           f"📍 Країна: {data['country']}\n\n"
-           f"💵 Ціна авто: <b>{price_val}€</b>\n"
-           f"{tax_text}\n"
-           f"📦 Послуги: <b>{fee}{curr}</b>\n"
-           f"--- --- ---\n"
-           f"💰 <b>РАЗОМ ПІД КЛЮЧ: ~{total_euro:.0f}€</b>")
-
-    kb = InlineKeyboardBuilder()
-    kb.row(types.InlineKeyboardButton(text="🚀 Відкрити Smart-Калькулятор", web_app=WebAppInfo(url=link_with_params)))
-    kb.row(types.InlineKeyboardButton(text="🏠 В меню", callback_data="back_start"))
-    
-    await callback.message.edit_text(res, reply_markup=kb.as_markup())
-
-@dp.callback_query(F.data == "back_start")
-async def back_start(callback: types.CallbackQuery):
-    await callback.message.answer("Оберіть розділ:", reply_markup=main_menu())
-
-async def main():
-    await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('final-sum').innerText = Math.round(total).toLocaleString() + ' €';
+            
+            // Вібрація при розрахунку
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+    </script>
+</body>
+</html>
