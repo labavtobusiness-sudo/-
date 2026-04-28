@@ -53,4 +53,97 @@
 <body>
 
     <div class="header">
-        <div class="car-photo-container
+        <div class="car-photo-container" id="car-display">
+            <span id="placeholder-text" style="color: #444; font-size: 40px;">🚙</span>
+            <img id="car-logo" src="" style="display: none;">
+        </div>
+        <h1 id="brand-title">@RozmytnyAvto</h1>
+    </div>
+
+    <div class="container">
+        <div class="region-selector">
+            <button class="region-btn active" id="btn-eu" onclick="setRegion('EU')">Європа 🇪🇺</button>
+            <button class="region-btn" id="btn-usa" onclick="setRegion('USA')">США 🇺🇸</button>
+        </div>
+
+        <div class="input-group">
+            <label>Марка авто</label>
+            <select id="make" onchange="updateBrandView()">
+                <option value="">Оберіть марку...</option>
+                <option value="Audi">Audi</option><option value="BMW">BMW</option>
+                <option value="Mercedes-Benz">Mercedes-Benz</option><option value="Volkswagen">Volkswagen</option>
+                <option value="Toyota">Toyota</option><option value="Tesla">Tesla</option>
+                <option value="Ford">Ford</option><option value="Skoda">Skoda</option>
+                <option value="Hyundai">Hyundai</option><option value="Kia">Kia</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <div class="input-group" style="flex: 1;"><label>Рік</label><select id="year"></select></div>
+            <div class="input-group" style="flex: 1;"><label>Об'єм (л)</label>
+                <select id="engine">
+                    <option value="1.5">1.5 л</option><option value="2.0" selected>2.0 л</option><option value="3.0">3.0 л</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label id="price-label">Ціна (€)</label>
+            <input type="number" id="price" placeholder="Сума">
+        </div>
+
+        <button class="calc-btn btn-blue" onclick="calculate()">Порахувати</button>
+        <button class="calc-btn btn-green" onclick="subscribeToUpdates()">🔔 Підписатись на оновлення</button>
+
+        <div id="result" class="result">
+            <div class="result-val" id="finalSum">0 €</div>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let currentRegion = 'EU';
+
+        function setRegion(r) {
+            currentRegion = r;
+            document.getElementById('btn-eu').classList.toggle('active', r === 'EU');
+            document.getElementById('btn-usa').classList.toggle('active', r === 'USA');
+            document.getElementById('price-label').innerText = r === 'EU' ? 'Ціна (€)' : 'Ціна ($)';
+        }
+
+        function updateBrandView() {
+            const make = document.getElementById('make').value;
+            const logoImg = document.getElementById('car-logo');
+            const placeholder = document.getElementById('placeholder-text');
+            if (make) {
+                logoImg.src = `https://logo.clearbit.com/${make.toLowerCase().replace(' ', '')}.com`;
+                logoImg.style.display = 'block'; placeholder.style.display = 'none';
+            }
+        }
+
+        const yearSelect = document.getElementById('year');
+        for (let y = 2026; y >= 2000; y--) {
+            let opt = document.createElement('option'); opt.value = y; opt.innerHTML = y;
+            yearSelect.appendChild(opt);
+        }
+
+        function calculate() {
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            if (price === 0) return;
+            let total = price * 1.35 + (currentRegion === 'EU' ? 1400 : 3200);
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('finalSum').innerText = Math.round(total).toLocaleString() + ' €';
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function subscribeToUpdates() {
+            const make = document.getElementById('make').value;
+            const year = document.getElementById('year').value;
+            if (!make) { tg.showAlert("Оберіть марку!"); return; }
+            tg.sendData(`sub|${make}|${year}|${currentRegion}`);
+            tg.close();
+        }
+    </script>
+</body>
+</html>
