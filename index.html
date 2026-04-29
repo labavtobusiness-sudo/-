@@ -10,44 +10,62 @@
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .container { background: var(--card); border-radius: 24px; max-width: 450px; margin: auto; padding: 20px; border: 1px solid #2c2c2e; }
         .title { color: var(--blue); text-align: center; font-size: 24px; font-weight: 800; margin-bottom: 20px; }
-        input, select { width: 100%; padding: 12px; background: var(--input); border: 1px solid #3a3a3c; border-radius: 12px; color: #fff; margin-bottom: 10px; box-sizing: border-box; }
+        label { font-size: 12px; color: #9ea0a3; margin-left: 5px; }
+        input, select { width: 100%; padding: 12px; background: var(--input); border: 1px solid #3a3a3c; border-radius: 12px; color: #fff; margin-bottom: 12px; box-sizing: border-box; outline: none; }
         .calc-box { background: #252527; padding: 15px; border-radius: 15px; text-align: center; margin: 15px 0; border: 1px solid #34a8eb44; }
         .total { font-size: 22px; font-weight: 900; color: var(--blue); }
         .btn-main { width: 100%; padding: 16px; background: var(--blue); border: none; border-radius: 14px; color: white; font-weight: bold; cursor: pointer; }
-        .ai-box { margin-top: 20px; background: #151517; padding: 10px; border-radius: 15px; border: 1px solid #34a8eb33; }
-        #ai-response { font-size: 13px; margin-top: 10px; color: #ccc; }
-        .socials { display: flex; justify-content: space-around; margin-top: 20px; }
-        .social-btn { text-decoration: none; color: #9ea0a3; font-size: 12px; background: #252527; padding: 8px 12px; border-radius: 8px; }
+        .ai-box { margin-top: 20px; background: #151517; padding: 12px; border-radius: 15px; border: 1px solid #34a8eb33; }
+        #ai-response { font-size: 13px; margin-top: 10px; color: #ccc; line-height: 1.4; }
+        .socials { display: flex; justify-content: space-around; margin-top: 25px; gap: 8px; }
+        .social-btn { text-decoration: none; color: #ffffff; font-size: 11px; background: #2c2c2e; padding: 10px 5px; border-radius: 10px; flex: 1; text-align: center; font-weight: 600; cursor: pointer; border: 1px solid #3a3a3c; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="title">RozmytnyAvto</div>
+        
+        <label>Ринок авто</label>
         <select id="market" onchange="calc()"><option value="EU">Європа (€)</option><option value="USA">США ($)</option></select>
-        <input type="number" id="price" value="5000" oninput="calc()" placeholder="Ціна">
+        
+        <label>Ціна на сайті</label>
+        <input type="number" id="price" value="5000" oninput="calc()">
+        
+        <label>Рік випуску</label>
         <select id="year" onchange="calc()"></select>
-        <div style="margin:10px 0;"><input type="checkbox" id="mil" onchange="calc()"> Пільга ЗСУ</div>
-        <div class="calc-box"><div class="total" id="res">РАЗОМ: 0</div></div>
+        
+        <div style="margin: 10px 5px; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="mil" onchange="calc()" style="width: 18px; height: 18px;"> 
+            <span style="font-size: 14px;">Пільга ЗСУ / Військовий</span>
+        </div>
+
+        <div class="calc-box">
+            <div style="font-size: 12px; color: #9ea0a3; margin-bottom: 5px;">Орієнтовно під ключ:</div>
+            <div class="total" id="res">0</div>
+        </div>
+        
         <button class="btn-main" onclick="tgOpen('https://t.me/byklya_top')">ЗАМОВИТИ ПІДБІР</button>
 
         <div class="ai-box">
-            <div style="color:var(--blue); font-weight:bold; font-size:14px;">✨ AI Менеджер</div>
-            <div style="display:flex; gap:5px; margin-top:5px;">
-                <input type="text" id="ai-in" placeholder="Запитайте щось..." style="margin:0;">
-                <button onclick="ask()" style="background:var(--blue); border:none; border-radius:10px; color:white; padding:0 15px;">></button>
+            <div style="color:var(--blue); font-weight:bold; font-size:14px; display: flex; align-items: center; gap: 5px;">✨ AI Менеджер</div>
+            <div style="display:flex; gap:5px; margin-top:8px;">
+                <input type="text" id="ai-in" placeholder="Запитайте про розмитнення..." style="margin:0;">
+                <button onclick="ask()" style="background:var(--blue); border:none; border-radius:10px; color:white; padding:0 15px; font-weight: bold;">➜</button>
             </div>
             <div id="ai-response"></div>
         </div>
 
         <div class="socials">
-            <a class="social-btn" onclick="tgOpen('https://www.instagram.com/rozmytny.avto')">Instagram</a>
-            <a class="social-btn" onclick="tgOpen('https://www.tiktok.com/@rozmytnyavto')">TikTok</a>
-            <a class="social-btn" onclick="tgOpen('https://t.me/RozmytnyAvto')">Channel</a>
+            <div class="social-btn" onclick="tgOpen('https://www.instagram.com/rozmytny.avto')">INSTAGRAM</div>
+            <div class="social-btn" onclick="tgOpen('https://www.tiktok.com/@rozmytnyavto')">TIKTOK</div>
+            <div class="social-btn" onclick="tgOpen('https://t.me/RozmytnyAvto')">КАНАЛ ТГ</div>
         </div>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp; tg.expand();
+        const tg = window.Telegram.WebApp; 
+        tg.expand();
+        
         const ys = document.getElementById('year');
         for(let y=2025; y>=2000; y--) ys.innerHTML += `<option value="${y}">${y}</option>`;
 
@@ -57,23 +75,33 @@
             const mil = document.getElementById('mil').checked;
             let tax = mil ? 0 : p * 0.35;
             let fee = mil ? 1500 : (m === 'USA' ? 2800 : 3200);
-            document.getElementById('res').innerText = `РАЗОМ: ${Math.round(p+tax+fee)} ${m==='USA'?'$':'€'}`;
+            const sym = m === 'USA' ? '$' : '€';
+            document.getElementById('res').innerText = `${Math.round(p+tax+fee).toLocaleString()} ${sym}`;
         }
 
         async function ask() {
             const inp = document.getElementById('ai-in').value;
             const box = document.getElementById('ai-response');
-            if(!inp) return; box.innerText = "⏳ Думаю...";
+            if(!inp) return; 
+            box.innerText = "⏳ Аналізую запит...";
             try {
                 const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBUovI-9K9bcXPRtY7vSGTwv6o7fOq5P8c`, {
                     method: "POST", headers: {"Content-Type":"application/json"},
-                    body: JSON.stringify({contents:[{parts:[{text:"Ти менеджер RozmytnyAvto. Коротко: "+inp}]}]})
+                    body: JSON.stringify({contents:[{parts:[{text:"Ти менеджер RozmytnyAvto. Дай коротку відповідь українською: "+inp}]}]})
                 });
                 const d = await r.json();
                 box.innerText = d.candidates[0].content.parts[0].text;
-            } catch(e) { box.innerText = "⚠️ Помилка ШІ."; }
+            } catch(e) { box.innerText = "⚠️ ШІ тимчасово недоступний."; }
         }
-        function tgOpen(u) { tg.openTelegramLink(u); }
+
+        function tgOpen(url) {
+            if (url.includes('t.me')) {
+                tg.openTelegramLink(url);
+            } else {
+                tg.openLink(url, {try_instant_view: false});
+            }
+        }
+        
         calc();
     </script>
 </body>
