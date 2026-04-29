@@ -3,250 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RozmytnyAvto Calc & AI</title>
+    <title>RozmytnyAvto</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #0f0f0f; --card: #1a1a1c; --blue: #34a8eb; --text: #ffffff; --sec: #9ea0a3; --input-bg: #2c2c2e; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        .container { background: var(--card); border-radius: 28px; border: 1px solid #2c2c2e; overflow: visible; max-width: 400px; margin: auto; padding-bottom: 20px; }
-        .p-20 { padding: 20px; }
-        .title { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 20px; text-transform: uppercase; color: var(--blue); letter-spacing: 1px; }
-        
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 11px; color: var(--sec); margin-bottom: 5px; margin-left: 5px; text-transform: uppercase; }
-        
-        /* Виправлення для випадаючих меню */
-        input, select { 
-            width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid #3a3a3c; 
-            border-radius: 12px; color: #fff; font-size: 16px; box-sizing: border-box; outline: none;
-            appearance: auto; -webkit-appearance: auto; /* Нативний вигляд для коректного випадання */
-        }
-
+        .container { background: var(--card); border-radius: 28px; border: 1px solid #2c2c2e; max-width: 400px; margin: auto; padding: 20px; }
+        .title { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 20px; color: var(--blue); }
+        input, select { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid #3a3a3c; border-radius: 12px; color: #fff; margin-bottom: 15px; appearance: auto; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        .calc-box { background: rgba(52, 168, 235, 0.05); padding: 18px; border-radius: 20px; border: 1px solid rgba(52, 168, 235, 0.15); margin-top: 10px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--sec); }
-        .row b { color: var(--text); }
-        
-        .total { font-size: 22px; font-weight: 900; color: var(--blue); text-align: center; border-top: 1px solid #333; padding-top: 15px; margin-top: 10px; }
-        
-        /* Кнопки */
-        .btn-main { width: 100%; padding: 16px; background: var(--blue); border: none; border-radius: 15px; color: white; font-weight: bold; margin-top: 20px; font-size: 16px; cursor: pointer; text-transform: uppercase; }
-        
-        /* Соцмережі */
-        .socials { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; }
-        .social-btn { flex: 1; padding: 12px 0; background: #252527; border: 1px solid #3a3a3c; border-radius: 12px; color: white; font-size: 14px; text-align: center; cursor: pointer; font-weight: 600; }
-        .social-btn:hover { background: #3a3a3c; }
-
-        /* Блок ШІ */
-        .ai-box { background: linear-gradient(145deg, #1f1f23, #151517); border: 1px solid #34a8eb50; border-radius: 20px; padding: 15px; margin-top: 20px; }
-        .ai-title { font-size: 14px; font-weight: bold; color: var(--blue); margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-        .ai-input-wrapper { display: flex; gap: 8px; }
-        .ai-input-wrapper input { padding: 10px; font-size: 14px; border-radius: 10px; }
-        .ai-btn { background: var(--blue); border: none; border-radius: 10px; color: white; padding: 0 15px; font-weight: bold; cursor: pointer; }
-        .ai-response { margin-top: 10px; font-size: 13px; color: #d1d1d1; font-style: italic; white-space: pre-wrap; }
-
-        .checkbox-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 14px; }
-        .checkbox-row input { width: auto; cursor: pointer; transform: scale(1.2); }
+        .calc-box { background: rgba(52, 168, 235, 0.05); padding: 15px; border-radius: 20px; border: 1px solid #34a8eb33; margin: 15px 0; }
+        .total { font-size: 20px; font-weight: 900; color: var(--blue); text-align: center; }
+        .btn-main { width: 100%; padding: 16px; background: var(--blue); border: none; border-radius: 15px; color: white; font-weight: bold; cursor: pointer; }
+        .socials { display: flex; justify-content: space-between; margin-top: 15px; gap: 5px; }
+        .social-btn { flex: 1; padding: 10px; background: #252527; border-radius: 10px; text-align: center; font-size: 12px; cursor: pointer; color: white; text-decoration: none; }
+        .ai-box { background: #151517; border: 1px solid #34a8eb50; border-radius: 15px; padding: 10px; margin-top: 20px; }
+        #ai-response { font-size: 13px; color: var(--sec); margin-top: 10px; font-style: italic; }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <div class="p-20">
-            <div class="title">RozmytnyAvto</div>
-            
-            <div class="grid">
-                <div class="input-group">
-                    <label>Ринок:</label>
-                    <select id="market" onchange="updateMarket()">
-                        <option value="EU">ЄС (Покупка)</option>
-                        <option value="USA">США (Аукціони)</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Країна:</label>
-                    <select id="country" onchange="run()"></select>
-                </div>
+        <div class="title">RozmytnyAvto</div>
+        <select id="market" onchange="run()"><option value="EU">ЄС (€)</option><option value="USA">США ($)</option></select>
+        <div class="grid">
+            <input type="number" id="price" placeholder="Ціна" value="5000" oninput="run()">
+            <select id="year" onchange="run()"></select>
+        </div>
+        <div class="grid">
+            <select id="fuel" onchange="run()"><option value="petrol">Бензин</option><option value="diesel">Дизель</option><option value="electric">Електро</option></select>
+            <input type="number" id="engine" value="2.0" step="0.1" oninput="run()">
+        </div>
+        <div style="font-size:14px; margin-bottom:10px;">
+            <input type="checkbox" id="isMil" onchange="run()"> Пільга ЗСУ
+        </div>
+        <div class="calc-box"><div class="total" id="res-total">РАЗОМ: 0</div></div>
+        <button class="btn-main" onclick="tgOpen('https://t.me/byklya_top')">ЗАМОВИТИ ПІДБІР</button>
+        
+        <div class="ai-box">
+            <div style="color:var(--blue); font-weight:bold; font-size:14px;">✨ AI Менеджер</div>
+            <div style="display:flex; gap:5px; margin-top:5px;">
+                <input type="text" id="ai-input" placeholder="Питання..." style="margin-bottom:0;">
+                <button onclick="askGemini()" style="background:var(--blue); border:none; border-radius:10px; color:white; padding:0 10px;">></button>
             </div>
+            <div id="ai-response"></div>
+        </div>
 
-            <div class="grid">
-                <div class="input-group">
-                    <label id="label-price">Ціна (EUR):</label>
-                    <input type="number" id="price" value="5000" oninput="run()">
-                </div>
-                <div class="input-group">
-                    <label>Рік випуску:</label>
-                    <select id="year" onchange="run()"></select>
-                </div>
-            </div>
-
-            <div class="grid">
-                <div class="input-group">
-                    <label>Тип палива:</label>
-                    <select id="fuel" onchange="run()">
-                        <option value="petrol">Бензин</option>
-                        <option value="diesel">Дизель</option>
-                        <option value="electric">Електро</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Двигун (л):</label>
-                    <input type="number" id="engine" value="2.0" step="0.1" oninput="run()">
-                </div>
-            </div>
-
-            <div class="checkbox-row">
-                <input type="checkbox" id="isMil" onchange="run()">
-                <label for="isMil" style="display:inline; text-transform:none; font-size:14px; color:var(--text)">Пільга для військових (ЗСУ)</label>
-            </div>
-
-            <div class="calc-box">
-                <div class="row"><span>Авто:</span><b id="res-price">0</b></div>
-                <div class="row"><span>Розмитнення:</span><b id="res-tax">0</b></div>
-                <div class="row"><span>Послуги + Доставка:</span><b id="res-service">0</b></div>
-                <div class="total" id="res-total">РАЗОМ: 0</div>
-            </div>
-
-            <button class="btn-main" onclick="openTG('https://t.me/byklya_top')">Замовити підбір 🚗</button>
-
-            <div class="ai-box">
-                <div class="ai-title">✨ AI-Помічник RozmytnyAvto</div>
-                <div class="ai-input-wrapper">
-                    <input type="text" id="ai-input" placeholder="Яке авто обрати за $5000?">
-                    <button class="ai-btn" onclick="askGemini()">></button>
-                </div>
-                <div id="ai-response" class="ai-response"></div>
-            </div>
-
-            <div class="socials">
-                <div class="social-btn" onclick="openTG('https://www.instagram.com/rozmytny.avto?igsh=MXA5MTdpYmlkc3ozcg==')">📷 Insta</div>
-                <div class="social-btn" onclick="openTG('https://www.tiktok.com/@rozmytnyavto?_r=1')">🎵 TikTok</div>
-                <div class="social-btn" onclick="openTG('https://t.me/RozmytnyAvto')">✈️ Канал</div>
-            </div>
+        <div class="socials">
+            <a class="social-btn" onclick="tgOpen('https://www.instagram.com/rozmytny.avto')">Insta</a>
+            <a class="social-btn" onclick="tgOpen('https://www.tiktok.com/@rozmytnyavto')">TikTok</a>
+            <a class="social-btn" onclick="tgOpen('https://t.me/RozmytnyAvto')">Channel</a>
         </div>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        // Списки країн
-        const euCountries = [
-            {val: "Lithuania", text: "Литва 🇱🇹"}, {val: "Germany", text: "Німеччина 🇩🇪"},
-            {val: "Latvia", text: "Латвія 🇱🇻"}, {val: "Estonia", text: "Естонія 🇪🇪"},
-            {val: "Denmark", text: "Данія 🇩🇰"}, {val: "Belgium", text: "Бельгія 🇧🇪"},
-            {val: "Norway", text: "Норвегія 🇳🇴"}, {val: "Italy", text: "Італія 🇮🇹"},
-            {val: "France", text: "Франція 🇫🇷"}
-        ];
-        const usaCountries = [{val: "USA", text: "США 🇺🇸"}];
-
-        function updateMarket() {
-            const market = document.getElementById('market').value;
-            const countrySelect = document.getElementById('country');
-            countrySelect.innerHTML = "";
-            
-            let list = (market === "EU") ? euCountries : usaCountries;
-            list.forEach(c => {
-                let opt = document.createElement('option');
-                opt.value = c.val; opt.innerHTML = c.text;
-                countrySelect.appendChild(opt);
-            });
-            run();
-        }
-
-        // Роки від 2025 до 2000
-        const yearSelect = document.getElementById('year');
-        for (let y = 2025; y >= 2000; y--) {
-            let opt = document.createElement('option');
-            opt.value = y; opt.innerHTML = y;
-            yearSelect.appendChild(opt);
-        }
-        yearSelect.value = "2018";
+        let tg = window.Telegram.WebApp; tg.expand();
+        const yearS = document.getElementById('year');
+        for(let y=2025; y>=2000; y--) yearS.innerHTML += `<option value="${y}">${y}</option>`;
 
         function run() {
-            const market = document.getElementById('market').value;
-            const country = document.getElementById('country').value;
-            const price = parseFloat(document.getElementById('price').value) || 0;
-            const year = parseInt(document.getElementById('year').value);
-            const fuel = document.getElementById('fuel').value;
-            const engine = parseFloat(document.getElementById('engine').value) || 0;
-            const isMil = document.getElementById('isMil').checked;
-
-            const cur = (market === 'USA') ? '$' : '€';
-            document.getElementById('label-price').innerText = `Ціна (${market === 'USA' ? 'USD' : 'EUR'}):`;
-
-            let service = 0;
-            let tax = 0;
-
-            // Логіка послуг та пільг
-            if (isMil) {
-                tax = 0;
-                if (market === 'EU') {
-                    service = (country === 'Lithuania') ? 1300 : 1600;
-                } else {
-                    service = 2800; // Для США залишається доставка
-                }
-            } else {
-                service = (market === 'USA') ? 2800 : 3200;
-                if (fuel === 'electric') {
-                    tax = engine * 1; 
-                } else {
-                    const age = Math.min(2026 - year, 15);
-                    const baseTax = (fuel === 'petrol') ? 50 : 75;
-                    const excise = baseTax * engine * age;
-                    const duty = price * 0.10;
-                    const vat = (price + duty + excise) * 0.20;
-                    tax = excise + duty + vat;
-                }
-            }
-
-            const total = price + tax + service;
-
-            document.getElementById('res-price').innerText = price.toLocaleString() + ' ' + cur;
-            document.getElementById('res-tax').innerText = Math.round(tax).toLocaleString() + ' ' + cur;
-            document.getElementById('res-service').innerText = service.toLocaleString() + ' ' + cur;
-            document.getElementById('res-total').innerText = "ПІД КЛЮЧ: " + Math.round(total).toLocaleString() + ' ' + cur;
+            const m = document.getElementById('market').value;
+            const p = parseFloat(document.getElementById('price').value) || 0;
+            const y = parseInt(document.getElementById('year').value);
+            const e = parseFloat(document.getElementById('engine').value) || 0;
+            const mil = document.getElementById('isMil').checked;
+            let tax = mil ? 0 : (p * 0.35); // Спрощена логіка
+            let fee = mil ? 1500 : (m === 'USA' ? 2800 : 3200);
+            document.getElementById('res-total').innerText = `ПІД КЛЮЧ: ${Math.round(p + tax + fee)} ${m === 'USA' ? '$' : '€'}`;
         }
 
-        function openTG(url) {
-            tg.openTelegramLink(url);
-        }
-
-        // ШІ Gemini Integration
         async function askGemini() {
-            const input = document.getElementById('ai-input').value;
-            const resBox = document.getElementById('ai-response');
-            if (!input) return;
-
-            resBox.innerText = "Аналізую запит...";
-            const key = "AIzaSyDpugzJJGenqFT-MZIqJc_p53NnFAjlpK8";
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-            
-            const promptContext = `Ти професійний менеджер з підбору авто компанії RozmytnyAvto. Допоможи клієнту коротко і по суті. Запит клієнта: ${input}`;
-
+            const inp = document.getElementById('ai-input').value;
+            const box = document.getElementById('ai-response');
+            if(!inp) return; box.innerText = "⏳ Думаю...";
             try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: promptContext }] }]
-                    })
+                const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCDtj14zSTuypunvIEQcoUf9-Q7ieU2rQg`, {
+                    method: "POST", headers: {"Content-Type":"application/json"},
+                    body: JSON.stringify({contents: [{parts: [{text: "Ти менеджер RozmytnyAvto. Коротко: " + inp}]}]})
                 });
-                
-                const data = await response.json();
-                if(data.candidates && data.candidates[0]) {
-                    resBox.innerText = data.candidates[0].content.parts[0].text;
-                } else {
-                    resBox.innerText = "ШІ не зміг відповісти. Спробуйте інше питання.";
-                }
-            } catch (error) {
-                resBox.innerText = "Помилка зв'язку з сервером штучного інтелекту.";
-            }
+                const d = await r.json();
+                box.innerText = d.candidates[0].content.parts[0].text;
+            } catch(e) { box.innerText = "⚠️ Помилка ключа або мережі."; }
         }
-
-        // Ініціалізація
-        updateMarket();
+        function tgOpen(url) { tg.openTelegramLink(url); }
+        run();
     </script>
 </body>
 </html>
