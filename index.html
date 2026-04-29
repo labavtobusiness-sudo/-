@@ -6,82 +6,92 @@
     <title>LabAvtoBusiness Calc</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #0f0f0f; --card: #1a1a1c; --blue: #34a8eb; --text: #ffffff; --sec: #9ea0a3; }
+        :root { --bg: #0f0f0f; --card: #1a1a1c; --blue: #34a8eb; --text: #ffffff; --sec: #9ea0a3; --input-bg: #2c2c2e; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        .container { background: var(--card); border-radius: 28px; border: 1px solid #2c2c2e; overflow: hidden; max-width: 400px; margin: auto; }
-        .car-img { width: 100%; height: 210px; object-fit: cover; background: #252527; }
+        .container { background: var(--card); border-radius: 28px; border: 1px solid #2c2c2e; overflow: hidden; max-width: 400px; margin: auto; padding-bottom: 20px; }
         .p-20 { padding: 20px; }
-        .title { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 15px; text-transform: uppercase; }
-        .calc-box { background: rgba(52, 168, 235, 0.08); padding: 18px; border-radius: 20px; border: 1px solid rgba(52, 168, 235, 0.2); }
-        .row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: var(--sec); }
-        .total { font-size: 24px; font-weight: 900; color: var(--blue); text-align: center; border-top: 1px solid #333; padding-top: 15px; margin-top: 10px; }
-        .btn { width: 100%; padding: 18px; background: var(--blue); border: none; border-radius: 18px; color: white; font-weight: bold; margin-top: 15px; }
-        input { width: 100%; padding: 14px; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 15px; color: #fff; text-align: center; font-size: 18px; }
+        .title { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 20px; text-transform: uppercase; color: var(--blue); }
+        
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; color: var(--sec); margin-bottom: 5px; margin-left: 5px; text-transform: uppercase; }
+        
+        input, select { 
+            width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid #3a3a3c; 
+            border-radius: 12px; color: #fff; font-size: 16px; box-sizing: border-box; outline: none;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        .calc-box { background: rgba(52, 168, 235, 0.05); padding: 18px; border-radius: 20px; border: 1px solid rgba(52, 168, 235, 0.15); margin-top: 10px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--sec); }
+        .row b { color: var(--text); }
+        
+        .total { font-size: 22px; font-weight: 900; color: var(--blue); text-align: center; border-top: 1px solid #333; padding-top: 15px; margin-top: 10px; }
+        .btn { width: 100%; padding: 16px; background: var(--blue); border: none; border-radius: 15px; color: white; font-weight: bold; margin-top: 20px; font-size: 16px; cursor: pointer; }
+        
+        .checkbox-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 14px; }
+        .checkbox-row input { width: auto; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <img id="car-img" src="" class="car-img" style="display:none;">
         <div class="p-20">
-            <div id="view-title" class="title">Smart Калькулятор 2026</div>
+            <div class="title">Калькулятор LabAvtoBusiness</div>
             
-            <div id="inputs">
-                <label style="font-size:11px; color:var(--sec);">Ціна лота:</label>
-                <input type="number" id="in-price" placeholder="2000" oninput="run()">
+            <div class="input-group">
+                <label>Країна:</label>
+                <select id="country" onchange="run()">
+                    <option value="USA">США 🇺🇸</option>
+                    <option value="Lithuania" selected>Литва 🇱🇹</option>
+                    <option value="Germany">Німеччина 🇩🇪</option>
+                    <option value="Latvia">Латвія 🇱🇻</option>
+                    <option value="Estonia">Естонія 🇪🇪</option>
+                    <option value="Denmark">Данія 🇩🇰</option>
+                    <option value="Belgium">Бельгія 🇧🇪</option>
+                    <option value="Norway">Норвегія 🇳🇴</option>
+                    <option value="Italy">Італія 🇮🇹</option>
+                    <option value="France">Франція 🇫🇷</option>
+                </select>
             </div>
 
-            <div class="calc-box" style="margin-top:15px;">
-                <div class="row"><span>Вартість авто:</span><span id="res-price">0</span></div>
-                <div class="row"><span>Послуги та доставка:</span><span id="res-service">0</span></div>
-                <div class="row"><span>Митні платежі:</span><span id="res-tax">0</span></div>
+            <div class="grid">
+                <div class="input-group">
+                    <label id="label-price">Ціна (EUR):</label>
+                    <input type="number" id="price" value="5000" oninput="run()">
+                </div>
+                <div class="input-group">
+                    <label>Рік випуску:</label>
+                    <select id="year" onchange="run()">
+                        </select>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="input-group">
+                    <label>Тип палива:</label>
+                    <select id="fuel" onchange="run()">
+                        <option value="petrol">Бензин</option>
+                        <option value="diesel">Дизель</option>
+                        <option value="electric">Електро</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Двигун (л):</label>
+                    <input type="number" id="engine" value="2.0" step="0.1" oninput="run()">
+                </div>
+            </div>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="isMil" onchange="run()">
+                <label for="isMil" style="display:inline; text-transform:none; font-size:14px; color:var(--text)">Пільга для військових</label>
+            </div>
+
+            <div class="calc-box">
+                <div class="row"><span>Авто:</span><b id="res-price">0</b></div>
+                <div class="row"><span>Розмитнення:</span><b id="res-tax">0</b></div>
+                <div class="row"><span>Послуги + Доставка:</span><b id="res-service">0</b></div>
                 <div class="total" id="res-total">РАЗОМ: 0</div>
             </div>
 
-            <button class="btn" onclick="tg.openTelegramLink('https://t.me/byklya_top')">ОФОРМИТИ ЗАЯВКУ</button>
-        </div>
-    </div>
-
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        const params = new URLSearchParams(window.location.search);
-        const cur = params.get('cur') || '€';
-        const isMil = params.get('mode')?.includes('Військових');
-        const country = params.get('ct') || '';
-
-        if (params.get('title')) {
-            document.getElementById('view-title').innerText = params.get('title');
-            document.getElementById('car-img').src = params.get('img');
-            document.getElementById('car-img').style.display = 'block';
-            document.getElementById('inputs').style.display = 'none';
-            run(3500); 
-        }
-
-        function run(p_val) {
-            let p = p_val || parseInt(document.getElementById('in-price').value) || 0;
-            let service = 0;
-            
-            // Логіка цін на послуги
-            if (country.includes('США')) {
-                service = 3200; // Долари
-            } else if (isMil) {
-                service = 1300; // Військові (Литва)
-            } else if (country.includes('Литва')) {
-                service = 1300;
-            } else {
-                service = 1600; // Інші країни ЄС
-            }
-
-            let tax = isMil ? 150 : p * 0.28; // Пільга або середня ставка
-            let total = p + service + tax;
-
-            document.getElementById('res-price').innerText = cur + p.toLocaleString();
-            document.getElementById('res-service').innerText = cur + service.toLocaleString();
-            document.getElementById('res-tax').innerText = cur + Math.round(tax).toLocaleString();
-            document.getElementById('res-total').innerText = "ПІД КЛЮЧ: " + cur + Math.round(total).toLocaleString();
-        }
-    </script>
-</body>
-</html>
+            <button class="btn
