@@ -3,7 +3,7 @@ import express from "express";
 const app = express();
 app.use(express.json());
 
-// ===== MOCK DATA (імітація ринку) =====
+// ===== MOCK DATA =====
 const carsDB = [
   { model: "BMW X5", price: 12000, year: 2018 },
   { model: "Audi A6", price: 9000, year: 2017 },
@@ -12,8 +12,7 @@ const carsDB = [
 
 // ===== FRONTEND =====
 app.get("/", (req, res) => {
-res.send(`
-<!DOCTYPE html>
+  res.send(`<!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
@@ -21,13 +20,12 @@ res.send(`
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-body{background:#0f0f0f;color:white;font-family:sans-serif;padding:10px}
-.card{background:#1a1a1c;padding:15px;border-radius:15px}
-input,select,button{width:100%;margin:5px 0;padding:12px;border-radius:10px;border:none}
-button{background:#34a8eb;color:white;font-weight:bold}
-h2{text-align:center;color:#34a8eb}
-.ai{margin-top:15px}
-.small{font-size:12px;color:#aaa}
+body { background:#0f0f0f; color:white; font-family:sans-serif; padding:10px }
+.card { background:#1a1a1c; padding:15px; border-radius:15px; margin-bottom:10px }
+input, select, button { width:100%; margin:5px 0; padding:12px; border-radius:10px; border:none }
+button { background:#34a8eb; color:white; font-weight:bold }
+h2 { text-align:center; color:#34a8eb }
+.small { font-size:12px; color:#aaa }
 </style>
 </head>
 
@@ -36,7 +34,6 @@ h2{text-align:center;color:#34a8eb}
 <h2>RozmytnyAvto</h2>
 
 <div class="card">
-
 <select id="market">
 <option value="EU">Європа</option>
 <option value="USA">США</option>
@@ -54,77 +51,78 @@ h2{text-align:center;color:#34a8eb}
 <button onclick="calc()">Розрахувати</button>
 
 <h3 id="res">0</h3>
-
 </div>
 
-<div class="card ai">
+<div class="card">
 <input id="q" placeholder="Напиши запит...">
 <button onclick="ask()">AI аналіз</button>
 <div id="out" class="small"></div>
 </div>
 
 <script>
-
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-function calc(){
-let p=+price.value
-let e=+engine.value
-let fuel=fuelEl.value
+const priceEl = document.getElementById("price");
+const engineEl = document.getElementById("engine");
+const fuelEl = document.getElementById("fuel");
+const resEl = document.getElementById("res");
 
-let age=5
+function calc() {
+  let p = +priceEl.value;
+  let e = +engineEl.value;
+  let fuel = fuelEl.value;
 
-let excise = fuel==="diesel" ? e*age*0.003 : e*age*0.002
-let duty = p*0.1
-let vat = (p+duty)*0.2
+  let age = 5;
 
-let total = p+duty+vat+excise
+  let excise = fuel === "diesel" ? e * age * 0.003 : e * age * 0.002;
+  let duty = p * 0.1;
+  let vat = (p + duty) * 0.2;
 
-res.innerText = Math.round(total)
+  let total = p + duty + vat + excise;
+
+  resEl.innerText = Math.round(total);
 }
 
-async function ask(){
-out.innerText="⏳ Аналіз..."
+async function ask() {
+  const q = document.getElementById("q").value;
+  const out = document.getElementById("out");
 
-let r = await fetch("/ai", {
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({q:q.value})
-})
+  out.innerText = "⏳ Аналіз...";
 
-let d = await r.json()
-out.innerText = d.answer
+  const r = await fetch("/ai", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ q })
+  });
+
+  const d = await r.json();
+  out.innerText = d.answer;
 }
 
-const fuelEl = document.getElementById("fuel")
-
-calc()
-
+calc();
 </script>
 
 </body>
-</html>
-`);
+</html>`);
 });
 
 // ===== AI =====
 app.post("/ai", (req, res) => {
   const q = req.body.q?.toLowerCase() || "";
 
-  // Примітивна логіка "AI"
-  let result = carsDB;
+  let result = [...carsDB];
 
   if (q.includes("дешев")) {
-    result = carsDB.sort((a,b)=>a.price-b.price);
+    result.sort((a,b)=>a.price-b.price);
   }
 
   if (q.includes("нов")) {
-    result = carsDB.sort((a,b)=>b.year-a.year);
+    result.sort((a,b)=>b.year-a.year);
   }
 
   res.json({
-    answer: "Рекомендації: " + result.map(c => `${c.model} (${c.price}$)`).join(", ")
+    answer: "Рекомендації: " + result.map(c => \`\${c.model} (\${c.price}$)\`).join(", ")
   });
 });
 
